@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <script defer src="https://use.fontawesome.com/releases/v5.0.2/js/all.js"></script>
+    <script src="./config.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <!-- ADDITIONAL STYLESHEET HERE -->
@@ -39,39 +40,39 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link active text-dark" target="_blank"
-                                href="http://mediaserver:32400/web/index.html">
+                                href="#" onclick='window.open(Plex, "_blank");'>
                                 <img src="plex.png" class="d-inline-block mr-2" style="width: 4em">
                                 Plex
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active text-dark" target="_blank" href="http://mediaserver:8181/home">
+                            <a class="nav-link active text-dark" target="_blank" href="#"  onclick='window.open(Tautalli, "_blank");'>
                                 <img src="tautalli.png" class="d-inline-block mr-2" style="width: 4em">
-                                PlexPy
+                                Taultalli
                             </a>
                         </li>
 
 
                         <li class="nav-item">
-                            <a class="nav-link active text-dark" target="_blank" href="http://mediaserver:8989/">
+                            <a class="nav-link active text-dark" target="_blank" href="#"  onclick='window.open(Sonarr, "_blank");'>
                                 <img src="sonarr.png" class="d-inline-block mr-2" style="width: 4em">
                                 Sonarr
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active text-dark" target="_blank" href="http://mediaserver:7878/">
+                            <a class="nav-link active text-dark" target="_blank" href="#"  onclick='window.open(Radarr, "_blank");'>
                                 <img src="radarr.png" class="d-inline-block mr-2" style="width: 4em">
                                 Radarr
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active text-dark" target="_blank" href="mediaserver:20831">
+                            <a class="nav-link active text-dark" target="_blank" href="#"  onclick='window.open(QBittorrent, "_blank");'>
                                 <img src="qbittorrent.png" class="d-inline-block mr-2" style="width: 4em">
                                 qBitTorrent
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active text-dark" target="_blank" href="http://mediaserver:9117/">
+                            <a class="nav-link active text-dark" target="_blank" href="#"  onclick='window.open(Jacektt, "_blank");'>
                                 <img src="jackett.png" class="d-inline-block mr-2" style="width: 4em">
                                 Jackett
                             </a>
@@ -123,7 +124,7 @@
                 $('tbody').html("")
                 //Lets Grabs all the Series
                 $.ajax({
-                    url: "http://mediaserver:8989/api/series?apikey=b2a4a458714447818c22494ca088471a",
+                    url: SonarrAPI_url + "series?apikey=" + SonarrAPI_key + "",
                     type: 'GET',
                     dataType: 'json', // added data type
                     success: function (data) {
@@ -154,7 +155,7 @@
             function GetQuality(SeriesID, Title, TitleSlug) {
                 //Grab Episode Info
                 $.ajax({
-                    url: "http://mediaserver:8989/api/EpisodeFile?apikey=b2a4a458714447818c22494ca088471a&seriesId=" + SeriesID,
+                    url: SonarrAPI_url + "EpisodeFile?apikey=" + SonarrAPI_key + "&seriesId=" + SeriesID,
                     type: 'GET',
                     dataType: 'json', // added data type
                     success: function (data) {
@@ -254,7 +255,7 @@
         }
         function LookupEpisodeId(SeriesID, Season, Episode) {
             $.ajax({
-                url: "http://mediaserver:8989/api/Episode?apikey=b2a4a458714447818c22494ca088471a&seriesId="+SeriesID,
+                url: SonarrAPI_url + "Episode?apikey=" + SonarrAPI_key + "&seriesId="+SeriesID,
                 type: 'GET',
                 dataType: 'json', // added data type
                 success: function (data) {
@@ -271,7 +272,7 @@
         function SearchEpisodeFile(id) {
             console.log(id)
             $.ajax({
-                url: "http://mediaserver:8989/api/command/?apikey=b2a4a458714447818c22494ca088471a",
+                url: SonarrAPI_url + "command/?apikey=" + SonarrAPI_key + "",
                 type: 'POST',
                 data: '{"name":"EpisodeSearch","episodeIds":['+id+']}',
                 dataType: 'json', // added data type
