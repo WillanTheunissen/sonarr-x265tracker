@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script defer src="https://use.fontawesome.com/releases/v5.0.2/js/all.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- ADDITIONAL STYLESHEET HERE -->
+    <title>Episode Monitor</title>
+</head>
+
+<body>
+    <!-- ALL OF YOUR SITE CODE HERE -->
+    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 py-2">
+        <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">MediaServer Monitor</a>
+        <!--input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search"-->
+        <ul class="navbar-nav px-3">
+            <li class="nav-item text-nowrap text-white" style="cursor: pointer;">
+                <input type="number" value="7" id="NumberofDays">
+            </li>
+            <li class="nav-item text-nowrap text-white refreshlink" style="cursor: pointer;">
+                <i class="fas fa-sync mr-2"></i> REFRESH
+            </li>
+        </ul>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-2 d-none d-md-block sidebar bg-light" style="min-height: calc(100vh - 56px)" style=>
+                <div class="sidebar-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active text-dark font-weight-bold" href="#">
+                                <img src="quality.png" class="d-inline-block mr-2" style="width: 4em">
+                                Quality Branches
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active text-dark" target="_blank"
+                                href="http://mediaserver:32400/web/index.html">
+                                <img src="plex.png" class="d-inline-block mr-2" style="width: 4em">
+                                Plex
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active text-dark" target="_blank" href="http://mediaserver:8181/home">
+                                <img src="tautalli.png" class="d-inline-block mr-2" style="width: 4em">
+                                PlexPy
+                            </a>
+                        </li>
+
+
+                        <li class="nav-item">
+                            <a class="nav-link active text-dark" target="_blank" href="http://mediaserver:8989/">
+                                <img src="sonarr.png" class="d-inline-block mr-2" style="width: 4em">
+                                Sonarr
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active text-dark" target="_blank" href="http://mediaserver:7878/">
+                                <img src="radarr.png" class="d-inline-block mr-2" style="width: 4em">
+                                Radarr
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active text-dark" target="_blank" href="mediaserver:20831">
+                                <img src="qbittorrent.png" class="d-inline-block mr-2" style="width: 4em">
+                                qBitTorrent
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active text-dark" target="_blank" href="http://mediaserver:9117/">
+                                <img src="jackett.png" class="d-inline-block mr-2" style="width: 4em">
+                                Jackett
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+            </nav>
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-0 bg-dark">
+                <table class="table  table-striped  table-borderless mb-0 table-dark" id="EpisodeTable">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col" class='timestamp'>UNIXTIME</th>
+                            <th scope="col">TIME</th>
+                            <th scope="col">SERIES</th>
+                            <th scope="col">EPISODE</th>
+                            <th scope="col">QUALITY</th>
+                            <th scope="col">RESOLUTION</th>
+                            <th scope="col">SIZE</th>
+                            <th scope="col">ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-center" colspan="8">LOADING</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </main>
+        </div>
+    </div>
+    <!-- ALL OF YOUR SITE CODE HERE -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"
+        integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous"></script>
+    <!-- ADDITIONAL JS HERE -->
+    <script>
+        $(document).ready(function () {
+            var Timeout_SortTable, ColourTable_SortTable
+            function LoadQualityBranches() {
+                //Clear the table 
+                $('tbody').html("")
+                //Lets Grabs all the Series
+                $.ajax({
+                    url: "http://mediaserver:8989/api/series?apikey=b2a4a458714447818c22494ca088471a",
+                    type: 'GET',
+                    dataType: 'json', // added data type
+                    success: function (data) {
+                        $(data).each(function (series) {
+                            var Title = $(this)[0].title
+                            var LastAired = new Date($(this)[0].previousAiring)
+                            var SeriesID = $(this)[0].id
+                            var TitleSlug = $(this)[0].titleSlug
+                            var TimeAgo = (new Date().getTime() - ($("#NumberofDays").val() * 24 * 60 * 60 * 1000))
+                            if (TimeAgo < LastAired) {
+                                GetQuality(SeriesID, Title, TitleSlug)
+                            }
+                        })
+                    }
+                });
+            }
+            function pad(input, length) {
+                return Array(length - Math.floor(Math.log10(input))).join('0') + input;
+            }
+            function formatFileSize(bytes,decimalPoint) {
+                if(bytes == 0) return '0 Bytes';
+                var k = 1000,
+                    dm = decimalPoint || 2,
+                    sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+                    i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+            }
+            function GetQuality(SeriesID, Title, TitleSlug) {
+                //Grab Episode Info
+                $.ajax({
+                    url: "http://mediaserver:8989/api/EpisodeFile?apikey=b2a4a458714447818c22494ca088471a&seriesId=" + SeriesID,
+                    type: 'GET',
+                    dataType: 'json', // added data type
+                    success: function (data) {
+                        $(data).each(function () {
+                            var DateAdded = new Date($(this)[0].dateAdded)
+                            var TimeAgo = (new Date().getTime() - ($("#NumberofDays").val() * 24 * 60 * 60 * 1000))
+                            if (TimeAgo < DateAdded) {
+                                var Season = pad($(this)[0].seasonNumber, 2)
+                                var Episode = $(this)[0].relativePath.replace("Season " + Season + "\\", "").split(" - ")[0];
+                                var RelativeTime = moment(DateAdded).fromNow()
+                                var UnixTime = moment(DateAdded).format('x')
+                                var Quality = $(this)[0].mediaInfo.videoCodec
+                                var Resolution = $(this)[0].quality.quality.name
+                                var Size = formatFileSize($(this)[0].size, 2)
+                                var MatchEpisodeID = parseInt(Episode.split("E")[1]);
+                                var MatchSeasonID = $(this)[0].seasonNumber;
+                                $("tbody").append('<tr class="markeduptable" style="cursor: pointer" data-MatchEpisodeID="'+MatchEpisodeID+'" data-MatchSeasonID="'+MatchSeasonID+'" data-SeriesID="'+SeriesID+'"><td class="timestamp sortnr">' + UnixTime + '</td><td>' + RelativeTime + '</td><td><a href="http://mediaserver:8989/series/'+TitleSlug+'" class="text-white font-weight-bold" target="_blank">' + Title + '</a></td><td>' + Episode + '</td><td class="qualityfilter">'+Quality +'</td><td>'+Resolution+'</td><td>'+Size+'</td><td onclick="SearchEpisode($(this))" class="font-weight-bold searchbutton"><i class="fas fa-search mr-2"></i> Search</td></tr>')
+                                clearTimeout(Timeout_SortTable)
+                                clearTimeout(ColourTable_SortTable)
+                                Timeout_SortTable = setTimeout(SortTable, 800)
+                                ColourTable_SortTable = setTimeout(ColourTable, 800)
+                            }
+                        })
+                    }
+                });
+            }
+            function SortTable() {
+                var start = new Date()
+                var tbl = document.getElementById("EpisodeTable").tBodies[0];
+                var store = [];
+                for (var i = 0, len = tbl.rows.length; i < len; i++) {
+                    var row = tbl.rows[i];
+                    var sortnr = parseFloat(row.cells[0].textContent || row.cells[0].innerText);
+                    if (!isNaN(sortnr)) store.push([sortnr, row]);
+                }
+                store.sort(function (x, y) {
+                    return x[0] - y[0];
+                });
+                for (var i = 0, len = store.length; i < len; i++) {
+                    tbl.appendChild(store[i][1]);
+                }
+                store = null;
+                $("tbody").each(function(elem,index){
+                var arr = $.makeArray($("tr",this).detach());
+                arr.reverse();
+                    $(this).append(arr);
+                });
+                var end = new Date()
+                console.log("Sorting Table took: "+ (end - start))
+            }
+            function ColourTable() {
+                var start = new Date()
+                $('.markeduptable').each(function () {
+                    var CurrentQuality = $(this).find('.qualityfilter').text();
+                    if (CurrentQuality == 'x265') {
+                        $(this).addClass('bg-success')
+                        $(this).addClass('text-white')
+                    }
+                    if (CurrentQuality == 'h265') {
+                        $(this).addClass('bg-success')
+                        $(this).addClass('text-white')
+                    }
+                    if (CurrentQuality == 'HEVC') {
+                        $(this).addClass('bg-success')
+                        $(this).addClass('text-white')
+                    }
+                    if (CurrentQuality == 'x264') {
+                        $(this).addClass('bg-danger')
+                        $(this).addClass('text-white')
+                        $(this).addClass("CutoffNotMet")
+                    }
+                    if (CurrentQuality == 'h264') {
+                        $(this).addClass('bg-danger')
+                        $(this).addClass('text-white')
+                        $(this).addClass("CutoffNotMet")
+                    }     
+                })
+                var end = new Date()
+                console.log("Colouring Table took: "+ (end - start))
+            }
+            $('.markeduptable').on('click',function (e){   
+                alert('Running')
+                if ($(this).hasClass('CutoffNotMet')) {
+                    alert("Lets go dude")
+                }
+            })
+            $('.refreshlink').on('click', LoadQualityBranches)
+            LoadQualityBranches()
+        })
+        function SearchEpisode(SearchBox) {
+            Element = $(SearchBox).parent()
+            if (Element.hasClass("CutoffNotMet")) {
+                LookupEpisodeId($(Element).attr("data-seriesid"), $(Element).attr("data-matchseasonid"), $(Element).attr("data-matchepisodeid"))
+            }
+            Element.removeClass('bg-danger')
+            Element.addClass('bg-warning')
+        }
+        function LookupEpisodeId(SeriesID, Season, Episode) {
+            $.ajax({
+                url: "http://mediaserver:8989/api/Episode?apikey=b2a4a458714447818c22494ca088471a&seriesId="+SeriesID,
+                type: 'GET',
+                dataType: 'json', // added data type
+                success: function (data) {
+                    $(data).each(function (index, value) {
+                        var CurrentSeason = value.seasonNumber
+                        var CurrentEpisode = value.episodeNumber
+                        if (CurrentEpisode == Episode && CurrentSeason == Season ) {
+                            SearchEpisodeFile(value.id)
+                        }
+                    })
+                }
+            });
+        }
+        function SearchEpisodeFile(id) {
+            console.log(id)
+            $.ajax({
+                url: "http://mediaserver:8989/api/command/?apikey=b2a4a458714447818c22494ca088471a",
+                type: 'POST',
+                data: '{"name":"EpisodeSearch","episodeIds":['+id+']}',
+                dataType: 'json', // added data type
+                success: function (data) {
+                }
+            });
+        }
+    </script>
+</body>
+<style>
+    .timestamp {
+        display: none;
+    }
+    .borderless td, .borderless th {
+        border: none;
+    }
+    .table-borderless > tbody > tr > td, .table-borderless > tbody > tr > th, .table-borderless > tfoot > tr > td, .table-borderless > tfoot > tr > th, .table-borderless > thead > tr > td, .table-borderless > thead > tr > th {
+        border: none;
+    }
+    .bg-success .searchbutton i {
+        display: none;
+    }
+</style>
+
+</html>
